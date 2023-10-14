@@ -1,0 +1,70 @@
+// Namespace with global variable that are updated every clock of the method
+namespace w
+{
+	glm::mat3 CamDir = glm::mat3(1.0f);
+	glm::vec3 CamPos = glm::vec3(-3.0f, 0.0f, 2.0f);
+	static auto startTime = std::chrono::high_resolution_clock::now();
+	float lastTime = 0.0f;
+	glm::mat4 out = glm::translate(glm::mat4(1), w::CamPos);
+}
+
+
+//Apply an Euler Matrix with only a Roll to have the correct orientation when moving
+glm::mat4 EulerRoll(glm::vec3 pos, float roll) {
+	glm::mat4 out = glm::translate(glm::mat4(1.0), pos) * //Translation to position
+		glm::rotate(glm::mat4(1.0), roll, glm::vec3(0, 1, 0));//Roll over
+	return out;
+}
+
+
+// Create the world matrix for the robot
+glm::mat4 getRobotWorldMatrix(GLFWwindow* window) {
+
+	//TIME AND CONSTANTS
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	const float ROT_SPEED = glm::radians(60.0f);
+	const float MOVE_SPEED = 0.75f;
+	float time = std::chrono::duration<float, std::chrono::seconds::period>
+		(currentTime - w::startTime).count();
+	float deltaT = time - w::lastTime; //the time since the last call to the procedure(named deltaT below) measured in seconds
+	w::lastTime = time;
+
+
+
+
+	//MOVEMENT <--> A west ,S south ,D right,W north
+	if (glfwGetKey(window, GLFW_KEY_A)) {
+		w::CamPos -= MOVE_SPEED * glm::vec3(w::CamDir[0]) * deltaT;
+		w::out = EulerRoll(w::CamPos, glm::radians(180.0f));
+	}
+	//No roll because by default is looking right
+	if (glfwGetKey(window, GLFW_KEY_D)) {
+		w::CamPos += MOVE_SPEED * glm::vec3(w::CamDir[0]) * deltaT;
+		w::out = EulerRoll(w::CamPos, glm::radians(0.0f));
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S)) {
+		w::CamPos += MOVE_SPEED * glm::vec3(w::CamDir[2]) * deltaT;
+		w::out = EulerRoll(w::CamPos, glm::radians(-90.0f));
+	}
+	if (glfwGetKey(window, GLFW_KEY_W)) {
+		w::CamPos -= MOVE_SPEED * glm::vec3(w::CamDir[2]) * deltaT;
+		w::out = EulerRoll(w::CamPos, glm::radians(90.0f));
+	}
+
+	/**
+	//DOWN
+	if(glfwGetKey(window, GLFW_KEY_F)) {
+		w:: CamPos -= MOVE_SPEED * glm::vec3(w::CamDir[1]) * deltaT;
+		w:: out= EulerRoll(w::CamPos,glm::radians(0.0f));
+	}
+	//UP
+	if(glfwGetKey(window, GLFW_KEY_R)) {
+		w:: CamPos += MOVE_SPEED * glm::vec3(w::CamDir[1]) * deltaT;
+		w:: out= EulerRoll(w::CamPos,glm::radians(0.0f));
+	}
+	*/
+
+	return w::out;
+}
+
