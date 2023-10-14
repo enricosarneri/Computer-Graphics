@@ -2,4 +2,4 @@
 Computer Graphics Course Project - Politecnico di Milano
 
 ## Contents
-Assignment for the course of Computer Graphics at Politecnico di Milano taught by Professor Marco Gribaudo
+Assignments for the course of Computer Graphics at Politecnico di Milano (2022) taught by Professor Marco Gribaudo.
